@@ -233,7 +233,7 @@ openssl s_client -connect assistant.jbyrd.org:443 -servername assistant.jbyrd.or
 ```bash
 # Verify LiteLLM is accessible from container
 podman exec google-assistant-ai curl http://192.168.1.34:4000/v1/models \
-  -H "Authorization: Bearer ***REMOVED***"
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025"
 
 # Check if LiteLLM service is running
 systemctl --user status pai-litellm

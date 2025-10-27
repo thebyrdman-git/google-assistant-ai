@@ -47,7 +47,7 @@ app.config['JSON_SORT_KEYS'] = False
 # Initialize LiteLLM client (local models)
 litellm_client = LiteLLMClient(
     base_url=os.getenv('LITELLM_BASE_URL', 'http://localhost:4000/v1'),
-    api_key=os.getenv('LITELLM_API_KEY', '***REMOVED***'),
+    api_key=os.getenv('LITELLM_API_KEY', 'sk-pai-hatter-red-hat-ai-models-2025'),
     model=os.getenv('LITELLM_MODEL', 'mistral-7b-instruct')
 )
 
@@ -60,26 +60,16 @@ gemini_client = GeminiClient(
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Health check endpoint for monitoring"""
+    """Health check endpoint for monitoring (fast, no AI calls)"""
     try:
-        # Check LiteLLM connectivity (non-blocking)
-        try:
-            litellm_healthy = litellm_client.health_check()
-            litellm_status = 'connected' if litellm_healthy else 'unavailable'
-        except Exception as e:
-            logger.warning(f"LiteLLM health check failed: {e}")
-            litellm_status = 'unavailable'
-        
-        # Check Gemini connectivity (non-blocking)
-        gemini_status = 'enabled' if gemini_client.enabled else 'disabled'
-        
         # Service is healthy if Flask is running
+        # Don't make actual AI calls here - too slow for health checks
         return jsonify({
             'status': 'healthy',
             'service': 'ai-chat-gateway',
             'backends': {
-                'litellm': litellm_status,
-                'gemini': gemini_status
+                'litellm': 'configured',
+                'gemini': 'enabled' if gemini_client.enabled else 'disabled'
             }
         }), 200
     except Exception as e:

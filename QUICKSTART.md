@@ -86,7 +86,7 @@ FLASK_DEBUG=false
 
 # LiteLLM
 LITELLM_BASE_URL=http://localhost:4000/v1
-LITELLM_API_KEY=***REMOVED***
+LITELLM_API_KEY=sk-pai-hatter-red-hat-ai-models-2025
 LITELLM_MODEL=granite-3.2-8b-instruct
 
 # Conversation
@@ -145,7 +145,7 @@ PORT=5002 python3 app/main.py
 ```bash
 # Verify LiteLLM is running
 curl http://localhost:4000/v1/models \
-  -H "Authorization: Bearer ***REMOVED***"
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025"
 
 # Check LiteLLM logs
 journalctl --user -u pai-litellm -f

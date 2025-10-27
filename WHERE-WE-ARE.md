@@ -20,7 +20,7 @@
 - Service: `pai-litellm.service` (systemd user)
 - Config: `~/.config/litellm/config.yaml`
 - API: http://localhost:4000/v1
-- Auth: `***REMOVED***`
+- Auth: `sk-pai-hatter-red-hat-ai-models-2025`
 - **TESTED:** Working perfectly with Ollama
 
 ### 3. **Flask Webhook Service** ✅
@@ -200,7 +200,7 @@ curl http://localhost:11434/api/tags
 
 # Test LiteLLM
 curl -X POST http://localhost:4000/v1/chat/completions \
-  -H "Authorization: Bearer ***REMOVED***" \
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025" \
   -H "Content-Type: application/json" \
   -d '{"model":"mistral-7b-instruct","messages":[{"role":"user","content":"hi"}]}'
 

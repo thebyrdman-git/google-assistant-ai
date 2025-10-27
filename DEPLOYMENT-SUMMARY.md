@@ -46,7 +46,7 @@ Mistral 7B Instruct (local model)
 - **Service:** `pai-litellm.service` (systemd user service)
 - **Config:** `~/.config/litellm/config.yaml`
 - **API:** http://localhost:4000/v1
-- **Auth:** `***REMOVED***`
+- **Auth:** `sk-pai-hatter-red-hat-ai-models-2025`
 - **Models Exposed:**
   - `mistral-7b-instruct` (Ollama)
   - `phi3-mini` (Ollama)
@@ -88,7 +88,7 @@ Mistral 7B Instruct (local model)
 PORT=5001
 FLASK_DEBUG=false
 LITELLM_BASE_URL=http://192.168.1.34:4000/v1
-LITELLM_API_KEY=***REMOVED***
+LITELLM_API_KEY=sk-pai-hatter-red-hat-ai-models-2025
 LITELLM_MODEL=mistral-7b-instruct  # ← Local Ollama model
 MAX_CONVERSATION_HISTORY=10
 SESSION_TIMEOUT_MINUTES=30
@@ -139,7 +139,7 @@ Expected:
 ```bash
 curl -X POST http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ***REMOVED***" \
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025" \
   -d '{
     "model": "mistral-7b-instruct",
     "messages": [{"role": "user", "content": "Say hello in 3 words"}],

@@ -33,7 +33,7 @@ services:
       - FLASK_DEBUG=false
       # LiteLLM (Local Models)
       - LITELLM_BASE_URL=http://192.168.1.34:4000/v1
-      - LITELLM_API_KEY=***REMOVED***
+      - LITELLM_API_KEY=sk-pai-hatter-red-hat-ai-models-2025
       - LITELLM_MODEL=mistral-7b-instruct
       # Gemini (Cloud API)
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}

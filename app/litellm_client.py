@@ -17,7 +17,7 @@ class LiteLLMClient:
     def __init__(
         self,
         base_url: str = "http://localhost:4000/v1",
-        api_key: str = "***REMOVED***",
+        api_key: str = "sk-pai-hatter-red-hat-ai-models-2025",
         model: str = "granite-3.2-8b-instruct"
     ):
         """

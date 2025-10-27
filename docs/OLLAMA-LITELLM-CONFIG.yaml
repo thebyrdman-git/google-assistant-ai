@@ -60,7 +60,7 @@ model_list:
 
 # Authentication configuration
 environment_variables:
-  LITELLM_MASTER_KEY: "***REMOVED***"
+  LITELLM_MASTER_KEY: "sk-pai-hatter-red-hat-ai-models-2025"
 
 # General configuration
 general_settings:
@@ -68,7 +68,7 @@ general_settings:
   embedding_model: nomic-embed-text
   max_budget: 1000
   budget_duration: 30d
-  master_key: "***REMOVED***"
+  master_key: "sk-pai-hatter-red-hat-ai-models-2025"
 
 # Logging and monitoring
 litellm_settings:

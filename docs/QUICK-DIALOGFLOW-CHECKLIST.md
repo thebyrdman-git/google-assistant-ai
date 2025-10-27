@@ -119,7 +119,7 @@ podman logs google-assistant-ai --tail 30
 
 # Verify LiteLLM is working
 curl -X POST http://localhost:4000/v1/chat/completions \
-  -H "Authorization: Bearer ***REMOVED***" \
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025" \
   -H "Content-Type: application/json" \
   -d '{"model":"mistral-7b-instruct","messages":[{"role":"user","content":"hi"}]}'
 ```
@@ -128,7 +128,7 @@ curl -X POST http://localhost:4000/v1/chat/completions \
 ```bash
 # Pre-warm Ollama model
 curl -X POST http://localhost:4000/v1/chat/completions \
-  -H "Authorization: Bearer ***REMOVED***" \
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025" \
   -H "Content-Type: application/json" \
   -d '{"model":"mistral-7b-instruct","messages":[{"role":"user","content":"hi"}],"max_tokens":5}'
 ```

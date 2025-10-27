@@ -66,7 +66,7 @@ echo ""
 echo "7️⃣ Testing LiteLLM → Ollama integration..."
 RESPONSE=$(curl -s -X POST http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ***REMOVED***" \
+  -H "Authorization: Bearer sk-pai-hatter-red-hat-ai-models-2025" \
   -d '{
     "model": "mistral-7b-instruct",
     "messages": [{"role": "user", "content": "Say hello in exactly 3 words"}],
