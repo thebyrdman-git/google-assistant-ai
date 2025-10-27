@@ -40,6 +40,28 @@ class LiteLLMClient:
         
         logger.info(f"Initialized LiteLLM client: {base_url}, model: {model}")
     
+    def chat(
+        self,
+        messages: List[Dict[str, str]],
+        model: Optional[str] = None,
+        max_tokens: int = 150,
+        temperature: float = 0.7
+    ) -> str:
+        """
+        Simple chat interface (returns text only)
+        
+        Args:
+            messages: Conversation history
+            model: Model to use (defaults to self.model)
+            max_tokens: Maximum tokens in response
+            temperature: Response randomness (0.0-1.0)
+            
+        Returns:
+            Response text from model
+        """
+        result = self.chat_completion(messages, model, max_tokens, temperature)
+        return result['content']
+    
     def chat_completion(
         self,
         messages: List[Dict[str, str]],
@@ -49,7 +71,7 @@ class LiteLLMClient:
         **kwargs
     ) -> Dict[str, Any]:
         """
-        Get chat completion from AI model
+        Get chat completion from AI model (with metadata)
         
         Args:
             messages: Conversation history
@@ -145,4 +167,5 @@ class LiteLLMClient:
         except Exception as e:
             logger.warning(f"Health check failed: {e}")
             return False
+
 

@@ -314,3 +314,4 @@ After Traefik integration is working:
 **External URL**: https://assistant.jbyrd.org  
 **Self-Healing**: ✅ Automatic restart on failure
 
+
