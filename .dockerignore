@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation
+README.md
+QUICKSTART.md
+docs/
+
+# Tests
+tests/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Configuration examples
+config.env.example
+*.example
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Ansible
+ansible/
+
+# Misc
+*.log
+*.db
+*.sqlite
+.DS_Store
+Thumbs.db
+

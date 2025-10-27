@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  google-assistant-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: google-assistant-ai
+    image: google-assistant-ai:latest
+    
+    # Self-healing: restart on failure
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Environment configuration
+    environment:
+      - PORT=5001
+      - FLASK_DEBUG=false
+      - LITELLM_BASE_URL=http://192.168.1.34:4000/v1
+      - LITELLM_API_KEY=***REMOVED***
+      - LITELLM_MODEL=granite-3.2-8b-instruct
+      - MAX_CONVERSATION_HISTORY=10
+      - SESSION_TIMEOUT_MINUTES=30
+      - LOG_LEVEL=INFO
+    
+    # Resource limits (prevent resource exhaustion)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Networks
+    networks:
+      - traefik-net
+    
+    # Traefik labels for routing
+    labels:
+      # Enable Traefik
+      - "traefik.enable=true"
+      
+      # HTTP Router
+      - "traefik.http.routers.assistant.rule=Host(`assistant.jbyrd.org`)"
+      - "traefik.http.routers.assistant.entrypoints=websecure"
+      - "traefik.http.routers.assistant.tls=true"
+      - "traefik.http.routers.assistant.tls.certresolver=cloudflare"
+      
+      # Service
+      - "traefik.http.services.assistant.loadbalancer.server.port=5001"
+      - "traefik.http.services.assistant.loadbalancer.healthcheck.path=/health"
+      - "traefik.http.services.assistant.loadbalancer.healthcheck.interval=30s"
+      
+      # Middleware (optional - add if you want auth)
+      # - "traefik.http.routers.assistant.middlewares=assistant-headers"
+      
+      # Security headers
+      - "traefik.http.middlewares.assistant-headers.headers.customResponseHeaders.X-Robots-Tag=noindex,nofollow"
+      - "traefik.http.middlewares.assistant-headers.headers.sslRedirect=true"
+      - "traefik.http.middlewares.assistant-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.assistant-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.assistant-headers.headers.stsPreload=true"
+      
+      # Network specification
+      - "traefik.docker.network=traefik-net"
+
+networks:
+  traefik-net:
+    external: true
+
