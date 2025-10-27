@@ -1,0 +1,66 @@
+{
+  "responseId": "test-response-id-12345",
+  "queryResult": {
+    "queryText": "What is Kubernetes?",
+    "languageCode": "en",
+    "intent": {
+      "name": "projects/my-project/agent/intents/ask-ai-intent",
+      "displayName": "Ask AI"
+    },
+    "intentDetectionConfidence": 0.95,
+    "parameters": {},
+    "fulfillmentText": "",
+    "fulfillmentMessages": []
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "What is Kubernetes?",
+              "inputType": "VOICE"
+            }
+          ],
+          "intent": "actions.intent.TEXT"
+        }
+      ],
+      "user": {
+        "locale": "en-US",
+        "userVerificationStatus": "VERIFIED"
+      },
+      "conversation": {
+        "conversationId": "test-conversation-id-67890",
+        "type": "ACTIVE",
+        "conversationToken": "[]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/my-project/agent/sessions/test-session-12345"
+}
+
