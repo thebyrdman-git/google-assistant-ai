@@ -5,13 +5,15 @@ Connects Google Assistant to LiteLLM-powered AI models
 """
 
 import os
+import time
 import logging
 from flask import Flask, request, jsonify
 from prometheus_client import Counter, Histogram, generate_latest
 from pythonjsonlogger import jsonlogger
 
-from webhook import handle_webhook
-from litellm_client import LiteLLMClient
+from app.webhook import handle_webhook
+from app.litellm_client import LiteLLMClient
+from app.gemini_client import GeminiClient
 
 # Configure structured logging
 logHandler = logging.StreamHandler()
@@ -42,11 +44,17 @@ AI_RESPONSE_TIME = Histogram(
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
-# Initialize LiteLLM client
+# Initialize LiteLLM client (local models)
 litellm_client = LiteLLMClient(
     base_url=os.getenv('LITELLM_BASE_URL', 'http://localhost:4000/v1'),
     api_key=os.getenv('LITELLM_API_KEY', '***REMOVED***'),
-    model=os.getenv('LITELLM_MODEL', 'granite-3.2-8b-instruct')
+    model=os.getenv('LITELLM_MODEL', 'mistral-7b-instruct')
+)
+
+# Initialize Gemini client (Google Cloud)
+gemini_client = GeminiClient(
+    api_key=os.getenv('GEMINI_API_KEY'),
+    model_name=os.getenv('GEMINI_MODEL', 'gemini-1.5-flash')
 )
 
 
@@ -54,21 +62,26 @@ litellm_client = LiteLLMClient(
 def health_check():
     """Health check endpoint for monitoring"""
     try:
-        # Check LiteLLM connectivity
-        litellm_healthy = litellm_client.health_check()
+        # Check LiteLLM connectivity (non-blocking)
+        try:
+            litellm_healthy = litellm_client.health_check()
+            litellm_status = 'connected' if litellm_healthy else 'unavailable'
+        except Exception as e:
+            logger.warning(f"LiteLLM health check failed: {e}")
+            litellm_status = 'unavailable'
         
-        if litellm_healthy:
-            return jsonify({
-                'status': 'healthy',
-                'service': 'google-assistant-ai',
-                'litellm': 'connected'
-            }), 200
-        else:
-            return jsonify({
-                'status': 'degraded',
-                'service': 'google-assistant-ai',
-                'litellm': 'unavailable'
-            }), 503
+        # Check Gemini connectivity (non-blocking)
+        gemini_status = 'enabled' if gemini_client.enabled else 'disabled'
+        
+        # Service is healthy if Flask is running
+        return jsonify({
+            'status': 'healthy',
+            'service': 'ai-chat-gateway',
+            'backends': {
+                'litellm': litellm_status,
+                'gemini': gemini_status
+            }
+        }), 200
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return jsonify({
@@ -81,6 +94,89 @@ def health_check():
 def metrics():
     """Prometheus metrics endpoint"""
     return generate_latest()
+
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    """
+    Unified chat endpoint
+    
+    Accepts OpenAI-style chat completions and routes to appropriate backend.
+    
+    Request body:
+    {
+        "model": "gemini-1.5-flash" | "mistral-7b-instruct" | etc.,
+        "messages": [
+            {"role": "system", "content": "..."},
+            {"role": "user", "content": "..."}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 2048
+    }
+    """
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Content-Type must be application/json'}), 400
+        
+        data = request.get_json()
+        
+        # Extract parameters
+        model = data.get('model', 'gemini-1.5-flash')
+        messages = data.get('messages', [])
+        temperature = data.get('temperature', 0.7)
+        max_tokens = data.get('max_tokens', 2048)
+        
+        if not messages:
+            return jsonify({'error': 'messages array is required'}), 400
+        
+        # Route to appropriate backend
+        if model.startswith('gemini') or model.startswith('models/gemini'):
+            # Use Gemini API
+            if not gemini_client.enabled:
+                return jsonify({
+                    'error': 'Gemini backend not available',
+                    'hint': 'Set GEMINI_API_KEY environment variable'
+                }), 503
+            
+            response_text = gemini_client.chat(
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            backend = 'gemini'
+        else:
+            # Use LiteLLM (local models)
+            response_text = litellm_client.chat(
+                messages=messages,
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            backend = 'litellm'
+        
+        # Return OpenAI-compatible response
+        return jsonify({
+            'id': 'chat-' + os.urandom(8).hex(),
+            'object': 'chat.completion',
+            'created': int(time.time()),
+            'model': model,
+            'backend': backend,
+            'choices': [{
+                'index': 0,
+                'message': {
+                    'role': 'assistant',
+                    'content': response_text
+                },
+                'finish_reason': 'stop'
+            }]
+        }), 200
+        
+    except RuntimeError as e:
+        logger.error(f"Chat processing error: {e}")
+        return jsonify({'error': str(e)}), 500
+    except Exception as e:
+        logger.error(f"Unexpected error in chat endpoint: {e}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/webhook', methods=['POST'])

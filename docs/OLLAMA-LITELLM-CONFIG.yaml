@@ -1,0 +1,89 @@
+# LiteLLM Configuration with Ollama Local Models
+# This replaces the Red Hat internal models with local Ollama models
+
+model_list:
+  # Ollama Models (Local on MiracleMax)
+  
+  # Mistral 7B Instruct - General purpose conversation
+  - model_name: mistral-7b-instruct
+    litellm_params:
+      model: ollama/mistral:7b-instruct
+      api_base: http://localhost:11434
+    model_info:
+      mode: chat
+      max_context_tokens: 8192
+      description: "Mistral 7B Instruct - Fast and capable for conversations"
+
+  # Phi-3 Mini - Lightweight and fast
+  - model_name: phi3-mini
+    litellm_params:
+      model: ollama/phi3:mini
+      api_base: http://localhost:11434
+    model_info:
+      mode: chat
+      max_context_tokens: 4096
+      description: "Phi-3 Mini - Lightweight model for quick responses"
+
+  # Llama 3.2 3B - Balanced performance
+  - model_name: llama3.2-3b
+    litellm_params:
+      model: ollama/llama3.2:3b
+      api_base: http://localhost:11434
+    model_info:
+      mode: chat
+      max_context_tokens: 4096
+      description: "Llama 3.2 3B - Good balance of speed and quality"
+
+  # Keep Red Hat models for when on VPN
+  # Granite 3.2 8B Instruct (Latest - Recommended)
+  - model_name: granite-3.2-8b-instruct
+    litellm_params:
+      model: ibm-granite/granite-3.2-8b-instruct
+      api_base: https://granite-3-2-8b-instruct--apicast-production.apps.int.stc.ai.prod.us-east-1.aws.paas.redhat.com:443/v1
+      api_key: c7bd727773d70979c2cbea0853293e54
+      max_tokens: 4096
+      temperature: 0.7
+    model_info:
+      mode: chat
+      max_context_tokens: 4096
+      description: "Latest Granite 3.2 8B Instruct model - Best general purpose model (requires VPN)"
+
+  # Nomic Embeddings (keep for existing uses)
+  - model_name: nomic-embed-text
+    litellm_params:
+      model: text-embedding-ada-002
+      api_base: https://nomic-embed-text-v1-5--apicast-production.apps.int.stc.ai.prod.us-east-1.aws.paas.redhat.com:443/v1
+      api_key: 100114b7832a56f55e61acd5c7bed7b3
+    model_info:
+      mode: embedding
+      description: "Nomic embed text v1.5 embeddings model"
+
+# Authentication configuration
+environment_variables:
+  LITELLM_MASTER_KEY: "***REMOVED***"
+
+# General configuration
+general_settings:
+  completion_model: mistral-7b-instruct  # Default to Ollama model
+  embedding_model: nomic-embed-text
+  max_budget: 1000
+  budget_duration: 30d
+  master_key: "***REMOVED***"
+
+# Logging and monitoring
+litellm_settings:
+  telemetry: false
+  drop_params: true
+  set_verbose: false
+  success_callback: []
+  failure_callback: []
+
+# Router settings for load balancing
+router_settings:
+  routing_strategy: simple-shuffle
+  model_group_alias:
+    local: ["mistral-7b-instruct", "phi3-mini", "llama3.2-3b"]
+    granite: ["granite-3.2-8b-instruct"]
+    embedding: ["nomic-embed-text"]
+
+

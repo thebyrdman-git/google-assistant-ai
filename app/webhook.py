@@ -5,7 +5,7 @@ Processes Google Dialogflow/Actions requests and generates responses
 
 import logging
 from typing import Dict, Any
-from conversation import ConversationManager
+from app.conversation import ConversationManager
 
 logger = logging.getLogger(__name__)
 

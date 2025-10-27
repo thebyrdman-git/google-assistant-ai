@@ -110,3 +110,4 @@ def truncate_text(text: str, max_length: int = 500) -> str:
     truncated = text[:max_length].rsplit(' ', 1)[0]
     return truncated + '...'
 
+

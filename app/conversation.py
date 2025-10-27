@@ -127,3 +127,4 @@ class ConversationManager:
             'session_timeout_minutes': self.session_timeout.total_seconds() / 60
         }
 
+

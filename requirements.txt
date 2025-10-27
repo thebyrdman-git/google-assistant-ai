@@ -3,12 +3,16 @@ flask==3.0.0
 werkzeug==3.0.1
 gunicorn==21.2.0
 
-# Google Actions/Dialogflow
+# Google Gemini API
+google-generativeai==0.3.2
+
+# Google Actions/Dialogflow (legacy, keeping for compatibility)
 google-auth==2.25.2
 google-cloud-dialogflow==2.26.0
 
 # OpenAI Client (for LiteLLM)
 openai==1.54.3
+httpx==0.27.0
 
 # HTTP and Networking
 requests==2.31.0

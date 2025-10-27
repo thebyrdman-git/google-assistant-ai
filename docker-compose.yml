@@ -8,8 +8,16 @@ services:
     container_name: google-assistant-ai
     image: google-assistant-ai:latest
     
+    # Load environment variables from .env file
+    env_file:
+      - .env
+    
     # Self-healing: restart on failure
     restart: unless-stopped
+    
+    # Expose port to host (for Traefik running on host)
+    ports:
+      - "5002:5001"
     
     # Health check
     healthcheck:
@@ -23,26 +31,31 @@ services:
     environment:
       - PORT=5001
       - FLASK_DEBUG=false
+      # LiteLLM (Local Models)
       - LITELLM_BASE_URL=http://192.168.1.34:4000/v1
       - LITELLM_API_KEY=***REMOVED***
-      - LITELLM_MODEL=granite-3.2-8b-instruct
+      - LITELLM_MODEL=mistral-7b-instruct
+      # Gemini (Cloud API)
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=models/gemini-2.5-flash
+      # Other
       - MAX_CONVERSATION_HISTORY=10
       - SESSION_TIMEOUT_MINUTES=30
       - LOG_LEVEL=INFO
     
-    # Resource limits (prevent resource exhaustion)
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
+    # Resource limits (commented out - not supported in rootless podman with cgroupv1)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1.0'
+    #       memory: 512M
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 256M
     
     # Networks
     networks:
-      - traefik-net
+      - traefik-network
     
     # Traefik labels for routing
     labels:
@@ -71,9 +84,9 @@ services:
       - "traefik.http.middlewares.assistant-headers.headers.stsPreload=true"
       
       # Network specification
-      - "traefik.docker.network=traefik-net"
+      - "traefik.docker.network=traefik-network"
 
 networks:
-  traefik-net:
+  traefik-network:
     external: true
 
